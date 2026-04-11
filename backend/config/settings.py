@@ -39,7 +39,7 @@ ALLOWED_HOSTS = [
     "192.168.43.148",
     "DESKTOP-900AF55",
     "desktop-900af55",
-    "yalhardware-backend.onrender.com",
+    "yalhardware.onrender.com",
 ]
 
 
