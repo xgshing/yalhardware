@@ -1,0 +1,39 @@
+# apps/products/serializers/product_base.py
+from rest_framework import serializers
+from django.conf import settings
+from ..models import Product, ProductVariant, ProductImage
+
+
+class BaseProductWriteSerializer(serializers.ModelSerializer):
+    # 仅用于接收上传文件（不入库）
+    cover = serializers.ImageField(
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
+
+    uploaded_images = serializers.ListField(
+        child=serializers.ImageField(),
+        write_only=True,
+        required=False
+    )
+
+    uploaded_variants = serializers.JSONField(
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = Product
+        fields = [
+            'name',
+            'category',
+            'price',
+            'description',
+            'specifications',
+            'is_active',
+            'is_featured',
+            'cover',
+            'uploaded_images',
+            'uploaded_variants',
+        ]

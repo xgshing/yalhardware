@@ -1,0 +1,16 @@
+// src/api/index.ts
+
+export * from './admin/auth'
+export * from './admin/category'
+export * from './admin/comments'
+export * from './admin/company'
+export * from './admin/content'
+export * from './admin/inventory'
+export * from './admin/orders'
+export * from './admin/product'
+export * from './admin/users'
+export * from './frontend/auth'
+export * from './frontend/orders'
+export * from './frontend/product'
+export * from './frontend/reviews'
+export * from './frontend/user'

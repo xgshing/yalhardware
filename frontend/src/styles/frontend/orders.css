@@ -1,0 +1,24 @@
+/* 订单样式 */
+/* src/styles/frontend/orders.css */
+
+/* 页面整体背景 */
+.orders-page {
+  background: #f6f7f9;
+  min-height: 100vh;
+  padding: 24px 0;
+
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* 中心内容区 */
+.orders-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+
+
+
