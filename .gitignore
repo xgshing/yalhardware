@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local env files
+.env
+.env.*
+*.local
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/coverage/
+frontend/.eslintcache
+frontend/*.tsbuildinfo
+frontend/cypress/videos/
+frontend/cypress/screenshots/
+frontend/__screenshots__/
+
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/backup.dump
+backend/render_backup.sql
+
+# Nested repo / archive leftovers
+frontend/yalhardware-frontend.git/
+backend/yalhardware-backend.git/
+
+# Local project helper files
+frontend/project_tree.py
+frontend/project_tree.txt
+backend/project_tree.py
+backend/project_tree.txt
+backend/export_structure_fixed.py
