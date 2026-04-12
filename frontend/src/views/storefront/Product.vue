@@ -11,15 +11,11 @@
       @item-click="handleBreadcrumbClick"
     />
 
-    <!-- ================= 产品主区域 ================= -->
+    <!-- ================= 产品主区�?================= -->
     <div class="product-details">
       <!-- ========== Product gallery ========== -->
       <div class="product-gallery">
-        <div
-          class="main-swiper-shell"
-          @mouseenter="galleryHovering = true"
-          @mouseleave="galleryHovering = false"
-        >
+        <div class="main-swiper-shell">
           <Swiper
             :modules="modules"
             :navigation="true"
@@ -42,14 +38,6 @@
             </SwiperSlide>
           </Swiper>
 
-          <button
-            type="button"
-            class="zoom-trigger"
-            :class="{ visible: galleryHovering }"
-            @click="openLightbox"
-          >
-            <span class="zoom-icon">+</span>
-          </button>
         </div>
 
         <Swiper
@@ -91,19 +79,19 @@
         @hide="lightboxVisible = false"
       />
 
-      <!-- ========== 产品信息区 ========= -->
-      <div class="product-info">`
+      <!-- ========== 产品信息�?========= -->
+      <div class="product-info">
         <h1>{{ productName }}</h1>
         <p class="price">${{ productData?.price }} USD</p>
         <p class="shipping">Shipping calculated at checkout.</p>
 <!--        <p class="reviews">{{ productData?.reviews }}</p>-->
 
-        <!-- 产品选择容器（颜色选择+数量选择） -->
+        <!-- 产品选择容器（颜色选择+数量选择�?-->
         <div class="product-choose-container">
           <!-- 颜色/款式选择 -->
           <div class="case-type">
             <div class="type-title">Case Color:</div>
-            <!-- 遍历产品款式（如不同颜色） -->
+            <!-- 遍历产品款式（如不同颜色�?-->
             <div
               v-for="(v, i) in productData?.variants || []"
               :key="v.id"
@@ -115,14 +103,14 @@
             </div>
           </div>
 
-          <!-- 数量选择器 -->
+          <!-- 数量选择�?-->
           <div class="order-row">
             <div class="quantity-title">Quantity:</div>
             <div class="quantity">
               <button @click="quantity > 1 && quantity--">-</button>
               <!--
               数量输入框，限制最小值为1
-              v-model.number="quantity".number修饰符确保数值类型
+              v-model.number="quantity".number修饰符确保数值类�?
                -->
               <input
                 type="number"
@@ -150,9 +138,9 @@
           </button>
         </div>
 
-        <!-- 折叠面板（产品详情、规格等） -->
+        <!-- 折叠面板（产品详情、规格等�?-->
         <ul class="accordion">
-          <!-- 遍历折叠面板项 -->
+          <!-- 遍历折叠面板�?-->
           <li
             v-for="(item, i) in accordionItems"
             :key="i"
@@ -164,7 +152,7 @@
               @click="toggleAccordion(i)"
             >
               <p class="item-title">{{ item.title }}</p>
-              <span>{{ item.isOpen ? '↑' : '↓' }}</span>
+              <span>{{ item.isOpen ? '-' : '+' }}</span>
             </div>
             <div
               v-show="item.isOpen"
@@ -212,7 +200,7 @@
   import { FreeMode, Navigation, Pagination } from 'swiper/modules'
   import { Swiper, SwiperSlide } from 'swiper/vue'
 
-  /* ================= 组合式函数导入 ================= */
+  /* ================= 组合式函数导�?================= */
   import { useAccordion } from '@/composables/product/useAccordion'
   import { useProduct } from '@/composables/product/useProduct'
   import { useProductCart } from '@/composables/product/useProductCart'
@@ -224,7 +212,7 @@
   /* ================= API服务 ================= */
   import { fetchCategoryProducts, orderService } from '@/services'
 
-  /* ================= 初始化 ================= */
+  /* ================= 初始�?================= */
   const router = useRouter()
   const route = useRoute()
   const userStore = useUserStore()
@@ -245,11 +233,11 @@
   const {
     mainSwiper, // 主轮播图实例
     activeIndex, // 当前激活的图片索引
-    lightboxVisible, // 灯箱显示状态
-    onMainSwiper, // 主轮播图初始化回调
+    lightboxVisible, // 灯箱显示状�?
+    onMainSwiper, // 主轮播图初始化回�?
     onThumbSwiper, // 缩略图轮播初始化回调
     openLightbox, // 打开灯箱方法
-    syncToIndex, // 同步到指定索引方法
+    syncToIndex, // 同步到指定索引方�?
   } = useProductGallery()
 
   /* 产品款式逻辑 */
@@ -264,8 +252,7 @@
     useAccordion(productData) // 传入产品数据
 
   /* 购买数量 */
-  const quantity = ref(1) // 默认数量为1
-  const galleryHovering = ref(false)
+  const quantity = ref(1) // 默认数量�?
 
   const redirectToLogin = () => {
     router.push({
@@ -290,7 +277,7 @@
 
   /* ================= 事件处理函数 ================= */
   /**
-   * 处理主轮播图幻灯片切换
+   * 处理主轮播图幻灯片切�?
    */
   const handleSlideChange = () => {
     const index = mainSwiper.value?.realIndex ?? 0 // 获取当前真实索引
@@ -300,15 +287,15 @@
 
   /**
    * 处理颜色/款式选择
-   * @param index - 选中的款式索引
+   * @param index - 选中的款式索�?
    */
   const handleSelectCase = (index: number) => {
     selectCase(index) // 选择款式
-    syncToIndex(index) // 同步图片到对应索引
+    syncToIndex(index) // 同步图片到对应索�?
   }
 
   /**
-   * 处理加入购物车
+   * 处理加入购物�?
    */
   const handleAddToCart = () => {
     if (!ensureCanOrder()) return
@@ -365,7 +352,7 @@
 
   /**
    * 处理相似产品点击
-   * @param p - 点击的产品对象
+   * @param p - 点击的产品对�?
    */
   const handleProductClick = (p: any) => {
     router.push({
@@ -374,7 +361,7 @@
     })
   }
 
-  /* ================= 组件挂载初始化 ================= */
+  /* ================= 组件挂载初始�?================= */
   onMounted(async () => {
     // 加载分类产品数据
     categoryProductsMap.value = await fetchCategoryProducts()
@@ -385,13 +372,13 @@
   h1 {
     font-size: 1.3rem;
   }
-  /* 页面主容器 */
+  /* 页面主容�?*/
   .product-container {
     margin: 0 auto;
   }
 
   /* ==================== 链接导航 ====================  */
-  /* 面包屑导航容器 */
+  /* 面包屑导航容�?*/
   .breadcrumb {
     display: flex;
     gap: 8px;
@@ -399,7 +386,7 @@
     color: #666;
   }
 
-  /* 分隔符样式 */
+  /* 分隔符样�?*/
   .separator {
     width: 1.6rem;
     height: 0.05rem;
@@ -432,44 +419,44 @@
     height: 1px;
     bottom: 0;
     left: 0;
-    /* 从左开始 */
+    /* 从左开�?*/
     background-color: #333;
     transition: transform 0.5s ease;
     /* 下划线变换动画（0.5秒缓动） */
     transform: scaleX(1);
     /* 初始状态：完全显示 */
     transform-origin: left center;
-    /* 变换原点：从左侧开始 */
+    /* 变换原点：从左侧开�?*/
   }
 
   /*
-  导航链接悬停状态
-  功能：鼠标悬停时改变文字颜色和下划线状态
+  导航链接悬停状�?
+  功能：鼠标悬停时改变文字颜色和下划线状�?
 */
   .nav-link:hover {
     color: #007bff;
-    /* 悬停时文字颜色变为蓝色 */
+    /* 悬停时文字颜色变为蓝�?*/
   }
 
   /*
-  导航链接悬停时的下划线动画
+  导航链接悬停时的下划线动�?
   功能：下划线从左侧开始向右收缩，实现向左消失效果
 */
   .nav-link:hover::after {
     transform: scaleX(0);
-    /* 水平缩放为0，实现消失效果 */
+    /* 水平缩放�?，实现消失效�?*/
     transform-origin: right center;
-    /* 变换原点改为右侧，实现从左向右消失 */
+    /* 变换原点改为右侧，实现从左向右消�?*/
   }
 
-  /* ========================== 产品图片展示（左）+产品介绍及下单（右） ========================== */
+  /* ========================== 产品图片展示（左�?产品介绍及下单（右） ========================== */
   .product-details {
     display: flex;
     gap: 24px;
     align-items: flex-start;
   }
 
-  /* == 产品图片展示（左） == */
+  /* == 产品图片展示（左�?== */
   /* 产品图片画廊容器 */
   .product-gallery {
     width: 50%;
@@ -517,46 +504,6 @@
     /* ??????????????????????????? */
   }
 
-  .zoom-trigger {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 6;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 58px;
-    height: 58px;
-    border: none;
-    border-radius: 999px;
-    background: rgba(17, 17, 17, 0.68);
-    color: #fff;
-    transform: translate(-50%, -50%) scale(0.92);
-    opacity: 0;
-    pointer-events: none;
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease,
-      background 0.2s ease;
-    cursor: zoom-in;
-  }
-
-  .zoom-trigger.visible {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  .zoom-trigger:hover {
-    background: rgba(17, 17, 17, 0.82);
-  }
-
-  .zoom-icon {
-    font-size: 28px;
-    line-height: 1;
-    font-weight: 300;
-  }
-
   /* 缩略图Swiper容器 */
   .thumbnail-swiper {
     width: 100%;
@@ -568,7 +515,7 @@
   .thumbnail-container {
     width: 100%;
     aspect-ratio: 1 / 1;
-    /* ⭐ 关键：宽度:高度=1:1，自动保持正方形 */
+    /* �?关键：宽�?高度=1:1，自动保持正方形 */
     padding: 4px;
     border: 2px solid transparent;
     border-radius: 6px;
@@ -576,26 +523,26 @@
     cursor: pointer;
     border: 1px solid #e8e8e8;
     opacity: 0.5;
-    /* 整体透明度 */
+    /* 整体透明�?*/
   }
 
-  /* 缩略图容器悬停状态 */
+  /* 缩略图容器悬停状�?*/
   .thumbnail-container:hover {
     border-color: #bfa48f;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
     opacity: 0.8;
-    /* 整体透明度 */
+    /* 整体透明�?*/
   }
 
-  /* 缩略图容器激活状态（当前选中） */
+  /* 缩略图容器激活状态（当前选中�?*/
   .thumbnail-container.active {
     border-color: #7b5a43;
     background: #fffaf7;
     opacity: 1;
-    /* 整体透明度 */
+    /* 整体透明�?*/
   }
 
-  /* 缩略图图片样式 */
+  /* 缩略图图片样�?*/
   .thumbnail-image {
     width: 100%;
     height: 100%;
@@ -605,7 +552,7 @@
 
   /*
   深度选择器（:deep()）用于穿透scoped样式
-  功能：修改Swiper组件内部的样式
+  功能：修改Swiper组件内部的样�?
 */
   /* 自定义Swiper导航按钮样式 */
   :deep(.swiper-button-next),
@@ -614,7 +561,7 @@
     align-items: center;
     justify-content: center;
     color: #333;
-    /* 箭头颜色深灰色 */
+    /* 箭头颜色深灰�?*/
     background: rgba(255, 255, 255, 0.8);
     /* 半透明白色背景 */
     width: 40px;
@@ -631,7 +578,7 @@
     display: none !important;
   }
 
-  /* 自己的箭头 */
+  /* 自己的箭�?*/
   :deep(.swiper-button-prev::before),
   :deep(.swiper-button-next::before) {
     display: block;
@@ -643,10 +590,10 @@
   }
 
   :deep(.swiper-button-prev::before) {
-    content: '←';
+    content: '�?;
   }
   :deep(.swiper-button-next::before) {
-    content: '→';
+    content: '�?;
   }
 
   /* Swiper分页器小圆点样式 */
@@ -671,8 +618,8 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* == 产品图片展示（左） == */
-  /* 右侧信息区 */
+  /* == 产品图片展示（左�?== */
+  /* 右侧信息�?*/
   .product-info {
     width: 50%;
     padding-top: 8px;
@@ -719,19 +666,19 @@
     background-color: white;
   }
 
-  /* 标签悬停状态 */
+  /* 标签悬停状�?*/
   .case-chip:hover {
     border-color: #bfa48f;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
   }
 
-  /* 标签选中状态 */
+  /* 标签选中状�?*/
   .case-chip.selected {
     border-color: #7b5a43;
     background: #fffaf7;
   }
 
-  /* == 数量选择器 == */
+  /* == 数量选择�?== */
   /* 数量选择器所在行 */
   .order-row {
     display: flex;
@@ -740,7 +687,7 @@
     margin-top: 18px;
   }
 
-  /* 数量选择器容器 */
+  /* 数量选择器容�?*/
   .quantity {
     display: inline-flex;
     width: fit-content;
@@ -752,7 +699,7 @@
     border-radius: 8px;
   }
 
-  /* 数量选择器按钮样式 */
+  /* 数量选择器按钮样�?*/
   .quantity button {
     width: 34px;
     height: 34px;
@@ -763,7 +710,7 @@
     border-radius: 6px;
   }
 
-  /* 数量输入框样式 */
+  /* 数量输入框样�?*/
   .quantity input {
     width: 64px;
     text-align: center;
@@ -787,7 +734,7 @@
     gap: 8px;
   }
 
-  /* 加入购物车按钮样式 */
+  /* 加入购物车按钮样�?*/
   .add-to-cart {
     width: 50%;
     border-radius: 8px;
@@ -834,11 +781,11 @@
   .accordion-container {
     position: relative;
     overflow: hidden;
-    /* 用box-shadow创建不会影响布局的边框 */
+    /* 用box-shadow创建不会影响布局的边�?*/
     box-shadow:
       inset 0 1px 0 #ddd,
-      /* 上边框 */ inset 0 -1px 0 #ddd;
-    /* 下边框 */
+      /* 上边�?*/ inset 0 -1px 0 #ddd;
+    /* 下边�?*/
     /* 或者用outline: 1px solid #ddd; outline-offset: -1px; */
   }
 
@@ -852,7 +799,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    /* 比默认边框厚，确保覆盖 */
+    /* 比默认边框厚，确保覆�?*/
     background-color: #666;
     transform: scaleX(0);
     transform-origin: left;
@@ -898,7 +845,7 @@
   }
 
   /* ========================== 相似产品样式 ========================== */
-  /* 相似产品根容器样式 */
+  /* 相似产品根容器样�?*/
   .about-root {
     display: flex;
     width: 100%;
@@ -932,7 +879,7 @@
     /* 盒模型：包含padding和border */
   }
 
-  /* 幻灯片样式 */
+  /* 幻灯片样�?*/
   .product-slide {
     display: flex;
   }
@@ -957,7 +904,7 @@
     border-radius: 8px;
   }
 
-  /* 产品元信息区域样式 */
+  /* 产品元信息区域样�?*/
   .pc-meta {
     padding-top: 8px;
     display: flex;
@@ -981,8 +928,8 @@
     font-weight: 700;
   }
 
-  /* ==========================滑块控制区域 外部控制（进度条+箭头按钮）========================== */
-  /* 滚动条容器样式 */
+  /* ==========================滑块控制区域 外部控制（进度条+箭头按钮�?========================= */
+  /* 滚动条容器样�?*/
   .controls-row {
     display: flex;
     align-items: center;
@@ -997,7 +944,7 @@
     background: #111;
     color: #fff;
     border: none;
-    /* 无边框 */
+    /* 无边�?*/
     border-radius: 8px;
     cursor: pointer;
     font-size: 18px;
@@ -1006,22 +953,22 @@
     justify-content: center;
   }
 
-  /* 箭头按钮禁用状态样式 */
+  /* 箭头按钮禁用状态样�?*/
   .arrow-btn:disabled {
     opacity: 0.35;
     /* 降低透明度至35% */
     cursor: not-allowed;
-    /* 鼠标指针为禁止符号 */
+    /* 鼠标指针为禁止符�?*/
   }
 
-  /* 进度条轨道样式 */
+  /* 进度条轨道样�?*/
   .scroll-track {
     flex: 1;
     /* 占据剩余空间 */
     height: 10px;
     background: rgba(0, 0, 0, 0.06);
     border-radius: 999px;
-    /* 圆形两端（大圆角） */
+    /* 圆形两端（大圆角�?*/
     position: relative;
     /* 相对定位（为滑块提供定位上下文） */
     overflow: hidden;
@@ -1031,9 +978,9 @@
   /* 滑块样式 */
   .scroll-thumb {
     position: absolute;
-    /* 绝对定位（相对于轨道） */
+    /* 绝对定位（相对于轨道�?*/
     left: 0;
-    /* 初始左侧位置为0 */
+    /* 初始左侧位置�? */
     top: 0;
     /* 顶部对齐 */
     height: 100%;
@@ -1041,24 +988,24 @@
     background: linear-gradient(90deg, #007aff, #00b7ff);
     /* 蓝色渐变背景 */
     border-radius: 999px;
-    /* 圆形两端（大圆角） */
+    /* 圆形两端（大圆角�?*/
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     touch-action: none;
     /* 禁用触摸动作（避免与浏览器默认冲突） */
     cursor: grab;
-    /* 可抓取光标 */
+    /* 可抓取光�?*/
     will-change: transform;
-    /* 性能优化：提示浏览器transform会变化 */
+    /* 性能优化：提示浏览器transform会变�?*/
   }
 
-  /* 滑块激活状态（正在拖拽） */
+  /* 滑块激活状态（正在拖拽�?*/
   .scroll-thumb:active {
     cursor: grabbing;
   }
 
-  /* ========================== 响应式设计：在小屏幕上调整导航样式 ========================== */
+  /* ========================== 响应式设计：在小屏幕上调整导航样�?========================== */
 
-  /* 平板设备（最大宽度768px）导航调整 */
+  /* 平板设备（最大宽�?68px）导航调�?*/
   @media (max-width: 768px) {
     .product-details {
       display: flex;
@@ -1114,12 +1061,12 @@
 
     .nav-link {
       padding-bottom: 2px;
-      /* 调整下划线间距 */
+      /* 调整下划线间�?*/
     }
 
     .nav-link::after {
       height: 1px;
-      /* 小屏幕使用更细的下划线 */
+      /* 小屏幕使用更细的下划�?*/
     }
   }
 
@@ -1129,3 +1076,4 @@
   }
 
 </style>
+

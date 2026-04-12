@@ -77,13 +77,15 @@
 
   .slide-content {
     position: relative;
+    height: 450px;
+    overflow: hidden;
+    border-radius: 10px;
   }
 
   .carousel-item {
     display: block;
     width: 100%;
-    height: 450px;
-    border-radius: 10px;
+    height: 100%;
     object-fit: cover;
   }
 
@@ -124,9 +126,13 @@
   }
 
   @media (max-width: 768px) {
-    .carousel-item {
+    .slide-content {
       height: 260px;
       border-radius: 8px;
+    }
+
+    .carousel-item {
+      height: 100%;
     }
 
     .img-info {
