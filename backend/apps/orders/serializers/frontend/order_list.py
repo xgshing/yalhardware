@@ -26,7 +26,7 @@ class OrderItemListSerializer(serializers.Serializer):
         if not image:
             return None
 
-        # Cloudinary / 外链
+        # COS / 外链
         if image.startswith("http://") or image.startswith("https://"):
             return image
 
@@ -74,3 +74,4 @@ class OrderListSerializer(serializers.ModelSerializer):
 
     def get_available_actions(self, obj):
         return get_available_actions(obj)
+

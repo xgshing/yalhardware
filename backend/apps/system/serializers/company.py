@@ -21,7 +21,7 @@ class CompanyAboutImageSerializer(serializers.ModelSerializer):
         if not obj.image:
             return ''
 
-        # Cloudinary / URL 字符串
+        # COS / URL 字符�?
         if isinstance(obj.image, str):
             return obj.image
 
@@ -52,3 +52,4 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyProfile
         fields = '__all__'
+

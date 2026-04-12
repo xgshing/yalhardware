@@ -55,7 +55,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         if not obj.cover:
             return None
         request = self.context.get("request")
-        # Cloudinary URL
+        # COS URL
         if obj.cover.startswith("http"):
             return obj.cover
         # 本地 media
@@ -64,3 +64,4 @@ class ProductDetailSerializer(serializers.ModelSerializer):
                 settings.MEDIA_URL + obj.cover.lstrip("/")
             )
         return settings.MEDIA_URL + obj.cover.lstrip("/")
+

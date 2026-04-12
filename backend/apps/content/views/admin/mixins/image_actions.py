@@ -1,44 +1,45 @@
-# apps/content/views/admin/mixins/image_actions.py
+from django.conf import settings
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
-from django.conf import settings
+
 from core.upload import upload_image
+
 
 class MultiImageActionsMixin:
     """
-    多图管理 Mixin：
-    - create/update 时处理上传的 images
-    - 删除不再使用的 existing_images
-    - 排序 images
-    - 单独上传接口
+    Shared helpers for managing multi-image relationships.
+    - Handle uploaded files on create/update
+    - Delete removed images
+    - Update image order
+    - Provide a dedicated upload endpoint
     """
-    image_model = None       # 子类必须指定图片模型
-    image_fk_field = None    # 外键字段名
-    file_field = 'image'     # 默认图片字段名，可子类覆盖
-    cloud_folder = 'home'    # Cloudinary folder，可子类覆盖
+
+    image_model = None
+    image_fk_field = None
+    file_field = "image"
+    cloud_folder = "home"
 
     def _upload_file(self, file):
         return upload_image(file, folder=self.cloud_folder)
 
     def _handle_images(self, instance):
-        """处理 FormData 上传、existing_images 删除"""
-        existing_ids = self.request.data.getlist('existing_images')
+        existing_ids = self.request.data.getlist("existing_images")
         qs = self.image_model.objects.filter(**{self.image_fk_field: instance})
-        
+
         if existing_ids:
             qs.exclude(id__in=existing_ids).delete()
         else:
             qs.delete()
 
-        files = self.request.FILES.getlist('images')
-        for i, f in enumerate(files):
-            url = self._upload_file(f)
+        files = self.request.FILES.getlist("images")
+        for index, uploaded in enumerate(files):
+            url = self._upload_file(uploaded)
             self.image_model.objects.create(
                 **{
                     self.image_fk_field: instance,
-                    'image': url,   # 永远是 URL
-                    'order': i,
+                    "image": url,
+                    "order": index,
                 }
             )
 
@@ -52,31 +53,32 @@ class MultiImageActionsMixin:
         self._handle_images(instance)
         return instance
 
-    # ========== 排序接口 ==========
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def sort_images(self, request, pk=None):
         if not isinstance(request.data, list):
-            return Response({'error': 'Invalid payload, expected list'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid payload, expected list"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         for item in request.data:
-            self.image_model.objects.filter(id=item['id']).update(order=item['order'])
-        return Response({'success': True})
+            self.image_model.objects.filter(id=item["id"]).update(order=item["order"])
+        return Response({"success": True})
 
-    # ========== 单独上传接口 ==========
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def images(self, request, pk=None):
         parent = self.get_object()
-        files = request.FILES.getlist('images')
+        files = request.FILES.getlist("images")
         objs = []
-        for i, f in enumerate(files):
-            url_or_file = self._upload_file(f)
+        for index, uploaded in enumerate(files):
+            url_or_file = self._upload_file(uploaded)
             objs.append(
                 self.image_model(
                     **{
                         self.image_fk_field: parent,
                         self.file_field: url_or_file,
-                        'order': i,
+                        "order": index,
                     }
                 )
             )
         self.image_model.objects.bulk_create(objs)
-        return Response({'success': True})
+        return Response({"success": True})

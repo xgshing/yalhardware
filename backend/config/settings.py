@@ -1,29 +1,16 @@
-# config/settings.py
 from pathlib import Path
 import dj_database_url
 import os
 from datetime import timedelta
 
-# 引入云储存API
-import cloudinary
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-g)#&hcipis_r_h-3e+a1-48w_ssi2r+um4i)+ss6g&l(n-une4"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_ENV") != "production"
 
-# 测试模式：允许前台用户免登录访问订单相关接口
-# - 生产环境默认关闭
-# - 本地开发环境默认开启，可通过环境变量显式覆盖
 TEST_BYPASS_USER_AUTH = (
     os.environ.get("DJANGO_BYPASS_USER_AUTH", "true" if DEBUG else "false").lower()
     == "true"
@@ -38,12 +25,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "192.168.43.148",
     "DESKTOP-900AF55",
-    "desktop-900af55",
-    "yalhardware.onrender.com",
+    "desktop-900af55",    "api.yuntuxia.top",
 ]
-
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -52,14 +35,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # third-party
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
-    "cloudinary_storage",
-    "cloudinary",
     "django_extensions",
-    # local apps
     "apps.products",
     "apps.content",
     "apps.users.apps.UsersConfig",
@@ -68,7 +47,6 @@ INSTALLED_APPS = [
     "apps.inventory",
     "apps.system.apps.SystemConfig",
 ]
-
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -83,41 +61,26 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # 本地前端
-    "https://xgshing.github.io",  # GitHub Pages
-    "http://192.168.43.148:5173",  # 本地前端
-
+    "http://localhost:5173",
+    "https://xgshing.github.io",
+    "http://192.168.43.148:5173",
 ]
 
-# ===== 文件存储 =====
-if os.environ.get("DJANGO_ENV") == "production" and os.environ.get("CLOUDINARY_URL"):
-    # 生产环境 + Cloudinary 已配置
-    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    MEDIA_URL = "/media/"  # Django 会自动生成 Cloudinary 的完整 URL
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-else:
-    # 本地开发或没有 Cloudinary URL
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
-
-
-# 定义 API 的认证和权限控制
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # 定义 API 的身份验证方式：使用 JWT  进行认证
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    # 控制谁可以访问 API。已认证用户：
-    # 可以进行所有操作（GET、POST、PUT、DELETE 等）
-    # 未认证用户：只能进行只读操作（GET、HEAD、OPTIONS）
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
 }
 
-
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),  # 你现在被踢的原因
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -143,19 +106,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# 判断是否在 Render 上
 DATABASE_URL = os.environ.get("DATABASE_URL")
+DB_ENGINE = os.environ.get("DB_ENGINE")
+DB_NAME = os.environ.get("DB_NAME")
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
+DB_PORT = os.environ.get("DB_PORT", "3306")
 
-if DATABASE_URL:
-    # -------------------------------
-    # Render 生产环境 - 使用 PostgreSQL
-    # -------------------------------
-    # 在 Render Web Service → Environment Variables 中设置：
-    # DATABASE_URL=postgresql://yalhardware_user:qQaBC9KPO7eZQjI8WJQQAcQbXYHC9EkF@dpg-d5e9ks8gjchc73a27bcg-a.oregon-postgres.render.com/yalhardware
+if DB_ENGINE == "django.db.backends.mysql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": DB_NAME,
+            "USER": DB_USER,
+            "PASSWORD": DB_PASSWORD,
+            "HOST": DB_HOST,
+            "PORT": DB_PORT,
+            "OPTIONS": {
+                "charset": "utf8mb4",
+            },
+        }
+    }
+elif DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.config(
             default=DATABASE_URL,
@@ -164,9 +137,6 @@ if DATABASE_URL:
         )
     }
 else:
-    # -------------------------------
-    # 本地开发环境 - 使用 SQLite
-    # -------------------------------
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -174,15 +144,11 @@ else:
         }
     }
 
-# 引入云储存设置
-CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
-
-if CLOUDINARY_URL:
-    # 自动解析 URL
-    cloudinary.config(cloudinary_url=CLOUDINARY_URL)
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+COS_SECRET_ID = os.environ.get("COS_SECRET_ID")
+COS_SECRET_KEY = os.environ.get("COS_SECRET_KEY")
+COS_REGION = os.environ.get("COS_REGION")
+COS_BUCKET = os.environ.get("COS_BUCKET")
+COS_BASE_URL = os.environ.get("COS_BASE_URL")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -191,7 +157,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {
-            "min_length": 6,  # 添加这行，将最小长度改为 6
+            "min_length": 6,
         },
     },
     {
@@ -202,10 +168,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -214,13 +176,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

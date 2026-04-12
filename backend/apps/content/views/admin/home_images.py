@@ -1,8 +1,6 @@
-# 删除单张图片
-# apps/content/views/admin/home_images.py
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAdminUser
 from django.conf import settings
+from rest_framework.permissions import IsAdminUser
+from rest_framework.viewsets import ModelViewSet
 
 from ...models.home import HomeBannerImage, HomeFeatureImage, HomeStoryImage
 from ...serializers.admin.image import (
@@ -13,16 +11,18 @@ from ...serializers.admin.image import (
 from .mixins.image_actions import MultiImageActionsMixin
 from core.upload import upload_image
 
+
 class BaseAdminImageViewSet(ModelViewSet, MultiImageActionsMixin):
     """
-    通用图片上传逻辑：
-    - 本地 SQLite 存本地
-    - 生产 PostgreSQL 上传 Cloudinary
+    Common image upload flow.
+    - Local development stores files under media/
+    - Production stores files in COS
     """
+
     permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
-        file_field_name = getattr(self, 'file_field_name', 'image')
+        file_field_name = getattr(self, "file_field_name", "image")
         file = self.request.FILES.get(file_field_name)
 
         if file:
@@ -32,28 +32,25 @@ class BaseAdminImageViewSet(ModelViewSet, MultiImageActionsMixin):
             serializer.save()
 
 
-# ---------------- Banner Image ----------------
 class AdminHomeBannerImageViewSet(BaseAdminImageViewSet):
     queryset = HomeBannerImage.objects.all()
     serializer_class = HomeBannerImageSerializer
     permission_classes = [IsAdminUser]
-    file_field_name = 'image'
-    cloud_folder = 'home/banners'
+    file_field_name = "image"
+    cloud_folder = "home/banners"
 
 
-# ---------------- Feature Image ----------------
 class AdminHomeFeatureImageViewSet(BaseAdminImageViewSet):
     queryset = HomeFeatureImage.objects.all()
     serializer_class = HomeFeatureImageSerializer
     permission_classes = [IsAdminUser]
-    file_field_name = 'image'
-    cloud_folder = 'home/features'
+    file_field_name = "image"
+    cloud_folder = "home/features"
 
 
-# ---------------- Story Image ----------------
 class AdminHomeStoryImageViewSet(BaseAdminImageViewSet):
     queryset = HomeStoryImage.objects.all()
     serializer_class = HomeStoryImageSerializer
     permission_classes = [IsAdminUser]
-    file_field_name = 'image'
-    cloud_folder = 'home/stories'
+    file_field_name = "image"
+    cloud_folder = "home/stories"

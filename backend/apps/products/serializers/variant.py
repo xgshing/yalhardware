@@ -20,11 +20,12 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         if not obj.style_image:
             return None
         request = self.context.get('request')
-        # Cloudinary URL
+        # COS URL
         if obj.style_image.startswith('http'):
             return obj.style_image
         # 本地 media
         if request:
             return request.build_absolute_uri(settings.MEDIA_URL + obj.style_image.lstrip('/'))
         return settings.MEDIA_URL + obj.style_image.lstrip('/')
+
 
