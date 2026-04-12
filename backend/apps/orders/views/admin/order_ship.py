@@ -2,7 +2,6 @@
 # apps/orders/views/admin/order_ship.py
 
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -12,6 +11,7 @@ from django.core.exceptions import ValidationError
 
 from apps.orders.models import Order, OrderItem
 from apps.orders.services.order_state_service import OrderStateService
+from apps.users.permissions import IsAdminUser as CustomIsAdminUser
 
 
 class AdminOrderShipView(APIView):
@@ -26,7 +26,7 @@ class AdminOrderShipView(APIView):
     - 精准异常返回
     """
 
-    permission_classes = [IsAdminUser]
+    permission_classes = [CustomIsAdminUser]
 
     @transaction.atomic
     def post(self, request, order_id):
@@ -109,12 +109,17 @@ class AdminOrderShipView(APIView):
         # ================= 业务执行 =================
 
         try:
+            operator = (
+                request.user
+                if request.user and request.user.is_authenticated
+                else None
+            )
             OrderStateService.ship(
                 order=order,
                 carrier=carrier.strip(),
                 tracking_no=tracking_no.strip(),
                 items=validated_items,
-                operator=request.user,
+                operator=operator,
             )
 
         except ValidationError as e:

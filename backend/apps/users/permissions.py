@@ -1,14 +1,13 @@
-# 自定义权限
-# apps/users/permissions.py
+from django.conf import settings
 from rest_framework.permissions import BasePermission
 
 
 class IsAdminUser(BasePermission):
-    """
-    仅允许is_staff=True的用户访问
-    普通用户 → 403
-    管理员 → 放行
-    """
+    """Allow staff users, with an optional test bypass for admin APIs."""
 
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.is_staff
+        if bool(getattr(settings, "TEST_BYPASS_ADMIN_AUTH", False)):
+            return True
+        return bool(
+            request.user and request.user.is_authenticated and request.user.is_staff
+        )

@@ -1,7 +1,6 @@
 # 后台订单列表API
 # apps/orders/views/admin/order_list.py
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAdminUser
 from rest_framework.pagination import PageNumberPagination
 from apps.orders.models import Order
 from apps.orders.serializers.admin.order_list import AdminOrderListSerializer

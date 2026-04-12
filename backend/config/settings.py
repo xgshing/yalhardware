@@ -15,6 +15,13 @@ TEST_BYPASS_USER_AUTH = (
     os.environ.get("DJANGO_BYPASS_USER_AUTH", "true" if DEBUG else "false").lower()
     == "true"
 )
+TEST_BYPASS_ADMIN_AUTH = (
+    os.environ.get(
+        "DJANGO_BYPASS_ADMIN_AUTH",
+        "true" if DEBUG else ("true" if TEST_BYPASS_USER_AUTH else "false"),
+    ).lower()
+    == "true"
+)
 TEST_GUEST_USER_EMAIL = os.environ.get("DJANGO_TEST_GUEST_EMAIL", "guest@test.local")
 TEST_GUEST_USER_USERNAME = os.environ.get(
     "DJANGO_TEST_GUEST_USERNAME", TEST_GUEST_USER_EMAIL

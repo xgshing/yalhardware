@@ -1,71 +1,104 @@
-<!-- src/components/Carousel/Carousel.vue -->
 <template>
-  <Carousel
-    ref="carouselRef"
-    :autoplay="duration"
-    :wrap-around="true"
-    :touch-drag="true"
-    :mouse-drag="true"
-    :transition="speed"
-    @init="onCarouselInit"
-    @slide-click="onSlideClick"
-    v-model="currentSlide"
-    class="carousel"
+  <div
+    class="carousel-shell"
+    @mouseenter="isHovering = true"
+    @mouseleave="isHovering = false"
   >
-    <Slide
-      v-for="(slide, index) in props.slides"
-      :key="index"
+    <Carousel
+      ref="carouselRef"
+      v-model="currentSlide"
+      :autoplay="duration"
+      :wrap-around="true"
+      :touch-drag="true"
+      :mouse-drag="true"
+      :transition="speed"
+      class="carousel"
     >
-      <!-- 这里放入你的轮播项内容，例如图片 -->
-      <img
-        :src="slide.imageUrl"
-        :alt="slide.title"
-        class="carousel_item"
-      />
-      <div class="img_info">
-        <h1 class="img_title">{{ slide.title }}</h1>
-        <p class="img_content">{{ slide.description }}</p>
-      </div>
-      <!-- 你也可以在这里放任何自定义的HTML结构 -->
-    </Slide>
+      <Slide
+        v-for="(slide, index) in props.slides"
+        :key="index"
+      >
+        <div class="slide-content">
+          <img
+            :src="slide.imageUrl"
+            :alt="slide.title"
+            class="carousel-item"
+            @click="openLightbox(index)"
+          />
+          <button
+            type="button"
+            class="zoom-trigger"
+            :class="{ visible: isHovering }"
+            @click.stop="openLightbox(index)"
+            aria-label="Preview image"
+          >
+            <span class="zoom-icon">+</span>
+          </button>
+          <div class="img-info">
+            <h1 class="img-title">{{ slide.title }}</h1>
+            <p class="img-content">{{ slide.description }}</p>
+          </div>
+        </div>
+      </Slide>
 
-    <!-- 添加导航组件 -->
-    <template #addons>
-      <CarouselIndicators
-        :slides="props.slides"
-        :currentSlide="currentSlide"
-        :onSelect="goTo"
-        :speed="duration"
-      />
-    </template>
-  </Carousel>
+      <template #addons>
+        <CarouselIndicators
+          :slides="props.slides"
+          :currentSlide="currentSlide"
+          :onSelect="goTo"
+          :speed="duration"
+        />
+      </template>
+    </Carousel>
+
+    <vue-easy-lightbox
+      :visible="lightboxVisible"
+      :imgs="lightboxImages"
+      :index="lightboxIndex"
+      @hide="lightboxVisible = false"
+    />
+  </div>
 </template>
 
-<script setup>
-  import { ref, onMounted } from 'vue'
-  import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
-  import 'vue3-carousel/dist/carousel.css' // 引入默认样式
+<script setup lang="ts">
+  import { computed, ref } from 'vue'
+  import { Carousel, Slide } from 'vue3-carousel'
+  import 'vue3-carousel/dist/carousel.css'
+  import VueEasyLightbox from 'vue-easy-lightbox'
+
   import CarouselIndicators from './CarouselIndicators.vue'
 
-  // 接收来自父组件的参数，与你原来的 props 兼容
-  const props = defineProps({
-    slides: Array,
-    duration: { type: Number, default: 3000 }, // 自动播放间隔
-    speed: { type: Number, default: 1000 }, // 切换动画时长
-  })
-
-  const currentSlide = ref(0)
-  const carouselRef = ref(null)
-
-  // 组件事件示例
-  const onCarouselInit = (carouselInstance) => {}
-
-  const onSlideClick = (index) => {
-    // 这里可以处理点击事件，例如跳转链接
+  type SlideItem = {
+    imageUrl: string
+    title: string
+    description: string
   }
 
-  // 跳转到指定幻灯片
-  const goTo = (index) => {
+  const props = defineProps<{
+    slides: SlideItem[]
+    duration?: number
+    speed?: number
+  }>()
+
+  const currentSlide = ref(0)
+  const carouselRef = ref<InstanceType<typeof Carousel> | null>(null)
+  const isHovering = ref(false)
+  const lightboxVisible = ref(false)
+  const lightboxIndex = ref(0)
+
+  const duration = computed(() => props.duration ?? 3000)
+  const speed = computed(() => props.speed ?? 1000)
+  const lightboxImages = computed(() =>
+    (props.slides ?? []).map((slide) => slide.imageUrl).filter(Boolean)
+  )
+
+  const openLightbox = (index: number) => {
+    if (!lightboxImages.value.length) return
+    lightboxIndex.value = index
+    lightboxVisible.value = true
+  }
+
+  const goTo = (index: number) => {
     if (carouselRef.value) {
       carouselRef.value.slideTo(index)
       currentSlide.value = index
@@ -74,48 +107,91 @@
 </script>
 
 <style scoped>
-  .carousel {
+  .carousel-shell {
+    position: relative;
     margin-bottom: 50px;
   }
-  .carousel_item {
-    position: relative;
+
+  .carousel-item {
     display: block;
     width: 100%;
     height: 450px;
     border-radius: 10px;
     object-fit: cover;
-    /* 保证图片自适应容器 */
+    cursor: zoom-in;
   }
 
-  .img_info {
+  .slide-content {
+    position: relative;
+  }
+
+  .zoom-trigger {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(17, 17, 17, 0.68);
+    color: #fff;
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .zoom-trigger.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .zoom-trigger:hover {
+    background: rgba(17, 17, 17, 0.82);
+  }
+
+  .zoom-icon {
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 300;
+  }
+
+  .img-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     padding: 0 0 60px 60px;
-    z-index: 2;
-    /* 在图片上层 */
+    pointer-events: none;
   }
 
-  .img_title {
+  .img-title {
     width: 40%;
     color: white;
     font-size: 3rem;
     line-height: 1.2;
   }
 
-  .img_content {
+  .img-content {
     width: 20%;
     color: white;
     font-size: 1.1rem;
     line-height: 1.4;
   }
 
-  /* 深度选择器可用于修改组件内部的样式 */
   :deep(.carousel__pagination-button) {
     background-color: #ccc;
   }
@@ -125,27 +201,36 @@
   }
 
   @media (max-width: 768px) {
-    .carousel_item {
+    .carousel-item {
       height: 260px;
       border-radius: 8px;
     }
 
-    .img_info {
+    .img-info {
       justify-content: flex-end;
       gap: 8px;
       padding: 0 12px 60px 12px;
     }
 
-    .img_title {
+    .img-title {
       width: 100%;
-      font-size: 1.4rem;
       margin: 0;
+      font-size: 1.4rem;
     }
 
-    .img_content {
+    .img-content {
       width: 100%;
-      font-size: 0.9rem;
       margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .zoom-trigger {
+      opacity: 1;
+      pointer-events: auto;
+      width: 50px;
+      height: 50px;
+      background: rgba(17, 17, 17, 0.58);
+      transform: translate(-50%, -50%) scale(1);
     }
   }
 </style>

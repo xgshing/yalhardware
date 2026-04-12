@@ -1,8 +1,8 @@
-# apps/system/serializers/company.py
-from rest_framework import serializers
 from django.conf import settings
+from rest_framework import serializers
+
 from core.upload import upload_image
-from ..models.company import CompanyProfile, CompanyAboutImage
+from ..models.company import CompanyAboutImage, CompanyProfile
 
 
 class CompanyAboutImageSerializer(serializers.ModelSerializer):
@@ -12,22 +12,19 @@ class CompanyAboutImageSerializer(serializers.ModelSerializer):
         model = CompanyAboutImage
         fields = ['id', 'image', 'image_url', 'sort', 'company']
         extra_kwargs = {
-            'company': {'write_only': True}
+            'company': {'write_only': True},
         }
 
     def get_image_url(self, obj):
-        request = self.context.get('request')
-
         if not obj.image:
             return ''
 
-        # COS / URL 字符�?
         if isinstance(obj.image, str):
             return obj.image
 
-        # 本地 ImageField
+        request = self.context.get('request')
         try:
-            return request.build_absolute_uri(obj.image.url)
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
         except Exception:
             return ''
 
@@ -36,14 +33,11 @@ class CompanyAboutImageSerializer(serializers.ModelSerializer):
 
         if image_file:
             if not settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-                validated_data['image'] = upload_image(
-                    image_file, folder='company/about'
-                )
+                validated_data['image'] = upload_image(image_file, folder='company/about')
             else:
                 validated_data['image'] = image_file
 
         return super().create(validated_data)
-
 
 
 class CompanyProfileSerializer(serializers.ModelSerializer):
@@ -52,4 +46,3 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyProfile
         fields = '__all__'
-

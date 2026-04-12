@@ -1,2 +1,2 @@
-# apps/system/models/__init__.py
 from .company import *
+from .rich_image import *
