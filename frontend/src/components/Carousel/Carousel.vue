@@ -13,6 +13,7 @@
       v-for="(slide, index) in props.slides"
       :key="index"
     >
+      <!-- 这里放入轮播项内容，例如图片 -->
       <div class="slide-content">
         <img
           :src="slide.imageUrl"
@@ -26,6 +27,7 @@
       </div>
     </Slide>
 
+    <!-- 添加导航组件 -->
     <template #addons>
       <CarouselIndicators
         :slides="props.slides"
@@ -78,6 +80,7 @@
   .slide-content {
     position: relative;
     height: 450px;
+    width: 100%;
     overflow: hidden;
     border-radius: 10px;
   }
