@@ -13,51 +13,45 @@
 
     <!-- ================= 产品主区域 ================= -->
     <div class="product-details">
-      <!-- ========== 产品图片展示区 ========= -->
+      <!-- ========== Product gallery ========== -->
       <div class="product-gallery">
-        <!-- 主轮播图：显示大图，支持导航和分页
-         navigation 左右箭头导航
-         pagination 可点击的分页点
-         effect="fade"切换效果：淡入淡出
-         -->
-        <Swiper
-          :modules="modules"
-          :navigation="true"
-          :pagination="{ clickable: true }"
-          effect="fade"
-          class="main-swiper"
-          @swiper="onMainSwiper"
-          @slide-change="handleSlideChange"
+        <div
+          class="main-swiper-shell"
+          @mouseenter="galleryHovering = true"
+          @mouseleave="galleryHovering = false"
         >
-          <!-- 遍历所有产品图片
-           loading="lazy" 懒加载
-           -->
-          <SwiperSlide
-            v-for="(img, i) in images"
-            :key="i"
+          <Swiper
+            :modules="modules"
+            :navigation="true"
+            :pagination="{ clickable: true }"
+            effect="fade"
+            class="main-swiper"
+            @swiper="onMainSwiper"
+            @slide-change="handleSlideChange"
           >
-            <img
-              :src="img"
-              class="main-image"
-              loading="lazy"
-            />
-          </SwiperSlide>
-        </Swiper>
+            <SwiperSlide
+              v-for="(img, i) in images"
+              :key="i"
+            >
+              <img
+                :src="img"
+                class="main-image"
+                loading="lazy"
+                @click="openLightbox"
+              />
+            </SwiperSlide>
+          </Swiper>
 
-        <button
-          type="button"
-          class="zoom-trigger"
-          @click="openLightbox"
-        >
-          Zoom
-        </button>
+          <button
+            type="button"
+            class="zoom-trigger"
+            :class="{ visible: galleryHovering }"
+            @click="openLightbox"
+          >
+            <span class="zoom-icon">+</span>
+          </button>
+        </div>
 
-        <!-- 缩略图轮播：自由模式，可滑动选择
-        slides-per-view="5"同时显示5个缩略图
-        space-between="12"缩略图间距
-        free-mode自由滑动模式
-        watch-slides-progress监听幻灯片进度
-        -->
         <Swiper
           :modules="[FreeMode]"
           :slides-per-view="5"
@@ -67,10 +61,6 @@
           class="thumbnail-swiper"
           @swiper="onThumbSwiper"
         >
-          <!-- 缩略图列表
-          @click="syncToIndex(i)"点击缩略图同步主图
-          class="{ active: activeIndex === i }高亮当前激活的缩略图
-          -->
           <SwiperSlide
             v-for="(img, i) in images"
             :key="i"
@@ -275,6 +265,7 @@
 
   /* 购买数量 */
   const quantity = ref(1) // 默认数量为1
+  const galleryHovering = ref(false)
 
   const redirectToLogin = () => {
     router.push({
@@ -485,7 +476,11 @@
     position: relative;
   }
 
-  /* 主图Swiper容器样式 */
+  .main-swiper-shell {
+    position: relative;
+  }
+
+  /* ???Swiper?????? */
   .main-swiper {
     width: 100%;
     height: 600px;
@@ -494,16 +489,16 @@
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     cursor: grab;
-    /* 鼠标光标为抓取手型 */
+    /* ??????????????*/
   }
 
-  /* 主图Swiper激活状态（正在拖拽） */
+  /* ???Swiper????????????????*/
   .main-swiper:active {
     cursor: grabbing;
-    /* 鼠标光标为抓取中手型 */
+    /* ??????????????? */
   }
 
-  /* 主图容器样式 */
+  /* ????????? */
   .main-image-container {
     width: 100%;
     height: 100%;
@@ -513,26 +508,53 @@
     background-color: #f8f8f8;
   }
 
-  /* 主图图片样式 */
+  /* ????????? */
   .main-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* 填充模式：保持比例填充，可能裁剪边缘 */
+    cursor: zoom-in;
+    /* ??????????????????????????? */
   }
 
   .zoom-trigger {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 50%;
+    left: 50%;
     z-index: 6;
-    border: 1px solid #d7d7d7;
-    background: rgba(255, 255, 255, 0.92);
-    color: #222;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border: none;
     border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 12px;
-    cursor: pointer;
+    background: rgba(17, 17, 17, 0.68);
+    color: #fff;
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      background 0.2s ease;
+    cursor: zoom-in;
+  }
+
+  .zoom-trigger.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .zoom-trigger:hover {
+    background: rgba(17, 17, 17, 0.82);
+  }
+
+  .zoom-icon {
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 300;
   }
 
   /* 缩略图Swiper容器 */
